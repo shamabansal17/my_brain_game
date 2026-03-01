@@ -63,6 +63,8 @@ header{width:100%;max-width:860px;display:flex;align-items:center;
   text-transform:uppercase;letter-spacing:1px;cursor:pointer;transition:all .15s;}
 .lvl-btn:hover{border-color:var(--accent);color:var(--accent);}
 .lvl-btn.on{border-color:var(--accent);background:var(--btn-bg);color:var(--accent);}
+.lvl-btn.lvl-hard{border-color:#ff5555;color:#ff5555;}
+.lvl-btn.lvl-hard:hover,.lvl-btn.lvl-hard.on{background:rgba(255,85,85,.15);border-color:#ff5555;color:#ff5555;}
 
 /* GAME LAYOUT */
 .game-wrap{display:flex;gap:18px;align-items:flex-start;justify-content:center;flex-wrap:wrap;width:100%;max-width:860px;}
@@ -97,8 +99,9 @@ header{width:100%;max-width:860px;display:flex;align-items:center;
 
 /* ERROR TOAST */
 .err-toast{position:fixed;top:42%;left:50%;transform:translate(-50%,-50%) scale(.85);z-index:500;
-  background:#1a0000;border:2px solid var(--error-color);border-radius:16px;padding:16px 24px;
-  text-align:center;pointer-events:none;opacity:0;transition:opacity .15s,transform .15s;min-width:200px;}
+  background:var(--card-bg);border:2px solid var(--error-color);border-radius:16px;padding:16px 24px;
+  text-align:center;pointer-events:none;opacity:0;transition:opacity .15s,transform .15s;min-width:200px;
+  box-shadow:0 8px 40px rgba(0,0,0,.5);}
 .err-toast.show{opacity:1;transform:translate(-50%,-50%) scale(1);animation:toastPulse .9s ease;}
 @keyframes toastPulse{
   0%{box-shadow:0 0 0 0 rgba(255,85,85,.8);}
@@ -112,13 +115,13 @@ header{width:100%;max-width:860px;display:flex;align-items:center;
 /* SUCCESS TOAST */
 .ok-toast{position:fixed;top:42%;left:50%;transform:translate(-50%,-50%) scale(.8);z-index:500;
   border-radius:18px;padding:14px 22px;text-align:center;pointer-events:none;opacity:0;
-  transition:opacity .2s,transform .2s;border:2px solid var(--success-color);
-  background:rgba(0,20,10,.95);box-shadow:0 0 30px rgba(68,221,136,.25);min-width:190px;}
+  transition:opacity .2s,transform .2s;border:2px solid var(--accent);
+  background:var(--accent);box-shadow:0 8px 40px rgba(0,0,0,.4);min-width:190px;}
 .ok-toast.show{opacity:1;transform:translate(-50%,-50%) scale(1);animation:okBounce .4s cubic-bezier(.175,.885,.32,1.275);}
 @keyframes okBounce{from{transform:translate(-50%,-50%) scale(.6)}to{transform:translate(-50%,-50%) scale(1)}}
 .ok-icon{font-size:1.8rem;}
-.ok-title{font-family:var(--header-font);font-size:1.05rem;color:var(--success-color);margin:2px 0;}
-.ok-sub{font-size:.72rem;color:#aaffcc;}
+.ok-title{font-family:var(--header-font);font-size:1.05rem;color:#fff;margin:2px 0;text-shadow:0 1px 4px rgba(0,0,0,.3);}
+.ok-sub{font-size:.72rem;color:rgba(255,255,255,.85);}
 
 /* CLEAR POPUP */
 .clr-pop{position:absolute;z-index:60;background:var(--card-bg);border:1.5px solid var(--accent);
@@ -140,14 +143,34 @@ header{width:100%;max-width:860px;display:flex;align-items:center;
   font-family:var(--body-font);font-weight:800;font-size:.78rem;cursor:pointer;
   transition:opacity .15s,transform .15s;text-transform:uppercase;letter-spacing:1px;}
 .new-btn:hover{opacity:.85;transform:translateY(-1px);}
+.undo-btn{width:100%;padding:9px;border-radius:9px;border:1.5px solid var(--card-border);
+  background:var(--btn-bg);color:var(--text-muted);font-family:var(--body-font);
+  font-weight:800;font-size:.78rem;cursor:pointer;transition:all .15s;
+  text-transform:uppercase;letter-spacing:1px;}
+.undo-btn:hover{border-color:var(--accent);color:var(--accent);}
+.undo-btn:disabled{opacity:.35;cursor:not-allowed;}
 .hint-box{font-size:.7rem;color:var(--text-muted);line-height:1.65;}
 .hint-box kbd{background:var(--btn-bg);border:1px solid var(--card-border);border-radius:3px;padding:1px 5px;font-size:.66rem;font-family:monospace;}
+
+/* MOBILE NUMPAD */
+.mobile-numpad{display:none;width:100%;max-width:456px;margin-top:10px;}
+@media(hover:none),(max-width:600px){.mobile-numpad{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}}
+.num-key{padding:12px 0;border-radius:10px;border:1.5px solid var(--card-border);
+  background:var(--card-bg);color:var(--text);font-family:var(--header-font);
+  font-size:1.2rem;cursor:pointer;transition:all .15s;text-align:center;}
+.num-key:hover,.num-key:active{background:var(--btn-bg);border-color:var(--accent);color:var(--accent);}
+.num-key.erase-key{font-family:var(--body-font);font-size:.7rem;font-weight:800;
+  text-transform:uppercase;border-color:var(--error-color);color:var(--error-color);}
+.num-key.undo-key{font-family:var(--body-font);font-size:.7rem;font-weight:800;
+  text-transform:uppercase;border-color:var(--card-border);color:var(--text-muted);}
+/* hidden input to trigger device keyboard on mobile */
+#mobileInput{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;top:0;left:0;}
 
 /* TIPS MODAL */
 .tips-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:300;align-items:center;justify-content:center;padding:20px;}
 .tips-overlay.show{display:flex;}
-.tips-card{background:var(--card-bg);border:1.5px solid var(--accent);border-radius:20px;padding:28px 30px;
-  max-width:480px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.6);max-height:88vh;overflow-y:auto;}
+.tips-card{background:var(--card-bg);border:2px solid var(--accent);border-radius:20px;padding:28px 30px;
+  max-width:480px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.4),0 0 0 1px var(--card-border);max-height:88vh;overflow-y:auto;}
 .tips-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
 .tips-title{font-family:var(--header-font);font-size:1.5rem;color:var(--accent);}
 .tips-close{background:var(--btn-bg);border:1px solid var(--card-border);border-radius:50%;width:30px;height:30px;
@@ -165,7 +188,8 @@ header{width:100%;max-width:860px;display:flex;align-items:center;
 .win-ov.show{display:flex;}
 .win-card{background:var(--card-bg);border:2px solid var(--accent);border-radius:24px;
   padding:34px 40px;text-align:center;max-width:440px;width:90%;
-  animation:pop .4s cubic-bezier(.175,.885,.32,1.275);position:relative;overflow:hidden;}
+  animation:pop .4s cubic-bezier(.175,.885,.32,1.275);position:relative;overflow:hidden;
+  box-shadow:0 0 60px rgba(0,0,0,.5),0 0 0 1px var(--card-border);}
 .win-card::before{content:'';position:absolute;inset:0;
   background:radial-gradient(ellipse at 50% 0%,rgba(77,150,255,.1) 0%,transparent 70%);pointer-events:none;}
 @keyframes pop{from{transform:scale(.55);opacity:0}to{transform:scale(1);opacity:1}}
@@ -199,9 +223,9 @@ header{width:100%;max-width:860px;display:flex;align-items:center;
 .confirm-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);
   z-index:400;align-items:center;justify-content:center;backdrop-filter:blur(3px);}
 .confirm-ov.show{display:flex;}
-.confirm-card{background:var(--card-bg);border:1.5px solid var(--accent);border-radius:20px;
+.confirm-card{background:var(--card-bg);border:2px solid var(--accent);border-radius:20px;
   padding:28px 32px;text-align:center;max-width:340px;width:90%;
-  animation:pop .28s cubic-bezier(.175,.885,.32,1.275);box-shadow:0 20px 60px rgba(0,0,0,.5);}
+  animation:pop .28s cubic-bezier(.175,.885,.32,1.275);box-shadow:0 20px 60px rgba(0,0,0,.4),0 0 0 1px var(--card-border);}
 .confirm-icon{font-size:2.4rem;margin-bottom:8px;}
 .confirm-title{font-family:var(--header-font);font-size:1.3rem;color:var(--text);margin-bottom:6px;}
 .confirm-sub{font-size:.8rem;color:var(--text-muted);line-height:1.5;margin-bottom:16px;}
@@ -267,16 +291,32 @@ header{width:100%;max-width:860px;display:flex;align-items:center;
   <button class="lvl-btn on" onclick="setLevel('beginner',this)">Beginner</button>
   <button class="lvl-btn"    onclick="setLevel('intermediate',this)">Intermediate</button>
   <button class="lvl-btn"    onclick="setLevel('advanced',this)">Advanced</button>
+  <button class="lvl-btn lvl-hard" onclick="setLevel('challenging',this)">&#128293; Challenging</button>
 </div>
 
 <div class="game-wrap">
   <div class="board-card">
     <div class="board" id="board"></div>
   </div>
+  <!-- MOBILE NUMPAD -->
+  <div class="mobile-numpad" id="mobileNumpad">
+    <button class="num-key" onclick="mobileInput(1)">1</button>
+    <button class="num-key" onclick="mobileInput(2)">2</button>
+    <button class="num-key" onclick="mobileInput(3)">3</button>
+    <button class="num-key" onclick="mobileInput(4)">4</button>
+    <button class="num-key" onclick="mobileInput(5)">5</button>
+    <button class="num-key" onclick="mobileInput(6)">6</button>
+    <button class="num-key" onclick="mobileInput(7)">7</button>
+    <button class="num-key" onclick="mobileInput(8)">8</button>
+    <button class="num-key" onclick="mobileInput(9)">9</button>
+    <button class="num-key erase-key" onclick="mobileErase()">&#8999; Erase</button>
+    <button class="num-key undo-key"  onclick="undoMove()">&#8617; Undo</button>
+  </div>
   <div class="side">
     <div class="sc">
       <div class="sc-label">Game</div>
       <button class="new-btn" onclick="confirmThenAct(newGame,'new')">&#127918; New Game</button>
+      <button class="undo-btn" id="undoBtn" onclick="undoMove()" disabled>&#8617; Undo (Ctrl+Z)</button>
     </div>
     <div class="sc">
       <div class="sc-label">Controls</div>
@@ -638,7 +678,7 @@ function createPuzzle(level){
   for(var i=0;i<9;i++){solved.push([]);for(var j=0;j<9;j++) solved[i].push(0);}
   fillBoard(solved);
   var puzzle=solved.map(function(row){return row.slice();});
-  var targets={beginner:35,intermediate:46,advanced:54};
+  var targets={beginner:35,intermediate:46,advanced:54,challenging:62};
   var toRemove=targets[level];
   var positions=shuffle((function(){var a=[];for(var p=0;p<81;p++) a.push(p);return a;})());
   for(var pi=0;pi<positions.length;pi++){
@@ -662,6 +702,7 @@ var puzzle=[],solution=[],userBoard=[],given=[];
 var selected=null,mistakes=0,seconds=0,timerInt=null;
 var currentLevel='beginner',activePop=null;
 var toastTimer=null,okTimer=null,blinkingCells=[];
+var moveHistory=[];  /* undo stack: [{r,c,oldVal,newVal}] */
 
 /* ================================================================
    GROUP HELPERS
@@ -838,6 +879,8 @@ function newGame(){
   clearTimeout(toastTimer);clearTimeout(okTimer);
   document.getElementById('errToast').classList.remove('show');
   document.getElementById('okToast').classList.remove('show');
+  moveHistory=[];
+  updateUndoBtn();
   document.getElementById('timer').textContent='00:00';
   document.getElementById('mistakes').textContent='0';
   var res=createPuzzle(currentLevel);
@@ -894,7 +937,39 @@ function renderBoard(){
   }
 }
 
-function selectCell(r,c){selected={r:r,c:c};renderBoard();}
+function selectCell(r,c){
+  selected={r:r,c:c};renderBoard();
+  /* On touch devices, focus hidden input to trigger keyboard */
+  var inp=document.getElementById('mobileInput');
+  if(inp){
+    inp.value='';
+    /* Only focus on touch device to avoid double-triggering on desktop */
+    if(window.matchMedia('(hover:none)').matches) inp.focus();
+  }
+}
+
+/* Wire hidden mobile input */
+document.addEventListener('DOMContentLoaded',function(){
+  var inp=document.getElementById('mobileInput');
+  if(!inp) return;
+  inp.addEventListener('input',function(){
+    var v=parseInt(inp.value);
+    if(v>=1&&v<=9&&selected){
+      var r=selected.r,c=selected.c;
+      if(!given[r][c]) commitNum(r,c,v);
+    }
+    inp.value='';
+  });
+  inp.addEventListener('keydown',function(e){
+    if(e.key==='Backspace'||e.key==='Delete'){
+      if(selected&&!given[selected.r][selected.c]){
+        moveHistory.push({r:selected.r,c:selected.c,old:userBoard[selected.r][selected.c],nw:0});
+        userBoard[selected.r][selected.c]=0;
+        updateUndoBtn();renderBoard();selectCell(selected.r,selected.c);
+      }
+    }
+  });
+});
 function onCellDbl(r,c,el){
   if(given[r][c]) return;
   closePop();selectCell(r,c);
@@ -913,15 +988,51 @@ function showClearPop(r,c,el){
 }
 function closePop(){if(activePop){activePop.remove();activePop=null;}}
 
+function updateUndoBtn(){
+  var btn=document.getElementById('undoBtn');
+  if(btn) btn.disabled=moveHistory.length===0;
+}
+
 function commitNum(r,c,num){
+  var oldVal=userBoard[r][c];
+  moveHistory.push({r:r,c:c,old:oldVal,nw:num});
+  if(moveHistory.length>100) moveHistory.shift();
   userBoard[r][c]=num;
+  updateUndoBtn();
   renderBoard();selectCell(r,c);
   checkGroupsAfterMove(r,c);
   checkWin();
 }
 
+function undoMove(){
+  if(moveHistory.length===0) return;
+  var mv=moveHistory.pop();
+  userBoard[mv.r][mv.c]=mv.old;
+  updateUndoBtn();
+  renderBoard();
+  selectCell(mv.r,mv.c);
+}
+
+function mobileInput(num){
+  if(!selected) return;
+  var r=selected.r,c=selected.c;
+  if(given[r][c]) return;
+  commitNum(r,c,num);
+}
+
+function mobileErase(){
+  if(!selected) return;
+  var r=selected.r,c=selected.c;
+  if(given[r][c]) return;
+  moveHistory.push({r:r,c:c,old:userBoard[r][c],nw:0});
+  userBoard[r][c]=0;
+  updateUndoBtn();
+  renderBoard();selectCell(r,c);
+}
+
 /* KEYBOARD */
 document.addEventListener('keydown',function(e){
+  if((e.ctrlKey||e.metaKey)&&e.key==='z'){e.preventDefault();undoMove();return;}
   closePop();if(!selected) return;
   var r=selected.r,c=selected.c;
   if(e.key==='ArrowUp'   &&r>0){e.preventDefault();selectCell(r-1,c);return;}
@@ -930,7 +1041,9 @@ document.addEventListener('keydown',function(e){
   if(e.key==='ArrowRight'&&c<8){e.preventDefault();selectCell(r,c+1);return;}
   if(given[r][c]) return;
   if(e.key>='1'&&e.key<='9'){e.preventDefault();commitNum(r,c,parseInt(e.key));}
-  if(e.key==='Backspace'||e.key==='Delete'){e.preventDefault();userBoard[r][c]=0;renderBoard();selectCell(r,c);}
+  if(e.key==='Backspace'||e.key==='Delete'){e.preventDefault();
+    moveHistory.push({r:r,c:c,old:userBoard[r][c],nw:0});
+    userBoard[r][c]=0;updateUndoBtn();renderBoard();selectCell(r,c);}
 });
 document.addEventListener('click',function(){closePop();});
 
@@ -982,5 +1095,6 @@ newGame();
     </div>
   </div>
 </div>
+<input id="mobileInput" inputmode="numeric" pattern="[1-9]" maxlength="1" autocomplete="off" autocorrect="off">
 </body>
 </html>
