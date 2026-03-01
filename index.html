@@ -154,7 +154,7 @@ header{width:100%;max-width:860px;display:flex;align-items:center;
 
 /* MOBILE NUMPAD */
 .mobile-numpad{display:none;width:100%;max-width:456px;margin-top:10px;}
-@media(hover:none),(max-width:600px){.mobile-numpad{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}}
+/* numpad visibility controlled by JS only */
 .num-key{padding:12px 0;border-radius:10px;border:1.5px solid var(--card-border);
   background:var(--card-bg);color:var(--text);font-family:var(--header-font);
   font-size:1.2rem;cursor:pointer;transition:all .15s;text-align:center;}
@@ -938,34 +938,67 @@ function renderBoard(){
 }
 
 function selectCell(r,c){
-  selected={r:r,c:c};renderBoard();
-  /* On touch devices, focus hidden input to trigger keyboard */
-  var inp=document.getElementById('mobileInput');
-  if(inp){
-    inp.value='';
-    /* Only focus on touch device to avoid double-triggering on desktop */
-    if(window.matchMedia('(hover:none)').matches) inp.focus();
+  selected={r:r,c:c}; renderBoard();
+  /* Focus hidden input only when the on-screen numpad is NOT showing
+     (i.e. touch device with HW keyboard, or desktop) */
+  var pad = document.getElementById('mobileNumpad');
+  var padVisible = pad && pad.style.display === 'grid';
+  if(!padVisible){
+    var inp = document.getElementById('mobileInput');
+    if(inp){ inp.value=''; inp.focus(); }
   }
 }
 
-/* Wire hidden mobile input */
-document.addEventListener('DOMContentLoaded',function(){
-  var inp=document.getElementById('mobileInput');
+/* ── MOBILE INPUT & NUMPAD LOGIC ──────────────────────────────
+   Strategy:
+   - isTouchDevice  = no fine pointer (finger-only screen)
+   - hasHWKeyboard  = device also has a physical keyboard attached
+   - Show on-screen numpad ONLY when touch device AND no HW keyboard
+   - When numpad is shown, do NOT focus hidden input (avoid double keyboard)
+   - When numpad is hidden, focus hidden input on cell select (opens device keyboard)
+   We detect HW keyboard by listening for any real keydown that isn't a touch event.
+*/
+var isTouchOnly = window.matchMedia('(hover:none) and (pointer:coarse)').matches;
+var hwKeyboardDetected = false;
+
+document.addEventListener('keydown', function(e){
+  /* Any real key press (not from our synthetic events) means HW keyboard present */
+  if(!e.synthetic){ hwKeyboardDetected = true; updateNumpadVisibility(); }
+}, {passive:true, capture:true});
+
+function updateNumpadVisibility(){
+  var pad = document.getElementById('mobileNumpad');
+  if(!pad) return;
+  /* Show numpad: touch-only device AND no physical keyboard detected */
+  var showPad = isTouchOnly && !hwKeyboardDetected;
+  pad.style.display = showPad ? 'grid' : 'none';
+  if(showPad){
+    pad.style.gridTemplateColumns = 'repeat(5,1fr)';
+    pad.style.gap = '6px';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  updateNumpadVisibility();
+
+  var inp = document.getElementById('mobileInput');
   if(!inp) return;
-  inp.addEventListener('input',function(){
-    var v=parseInt(inp.value);
-    if(v>=1&&v<=9&&selected){
-      var r=selected.r,c=selected.c;
+
+  inp.addEventListener('input', function(){
+    var v = parseInt(inp.value);
+    if(v>=1 && v<=9 && selected){
+      var r=selected.r, c=selected.c;
       if(!given[r][c]) commitNum(r,c,v);
     }
-    inp.value='';
+    inp.value = '';
   });
-  inp.addEventListener('keydown',function(e){
+
+  inp.addEventListener('keydown', function(e){
     if(e.key==='Backspace'||e.key==='Delete'){
-      if(selected&&!given[selected.r][selected.c]){
+      if(selected && !given[selected.r][selected.c]){
         moveHistory.push({r:selected.r,c:selected.c,old:userBoard[selected.r][selected.c],nw:0});
-        userBoard[selected.r][selected.c]=0;
-        updateUndoBtn();renderBoard();selectCell(selected.r,selected.c);
+        userBoard[selected.r][selected.c] = 0;
+        updateUndoBtn(); renderBoard(); selectCell(selected.r,selected.c);
       }
     }
   });
