@@ -530,7 +530,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);
 
       <div class="tcard">
         <div class="tcard-lbl">Game</div>
-        <button class="nbtn" onclick="confirmThen(function(){newGame();},'new')">&#127918; New Game</button>
+        <button class="nbtn" onclick="newGame()">&#127918; New Game</button>
         <button class="ubtn" onclick="resetGame()">&#8635; Reset Puzzle</button>
       </div>
 
@@ -636,7 +636,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);
     <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
       <button class="cfbtn secondary" onclick="continuePlaying()">&#9654; Continue (no score)</button>
       <button class="cfbtn primary"   onclick="resetGame();hideMsOv()">&#8635; Restart Puzzle</button>
-      <button class="cfbtn danger"    onclick="confirmThen(function(){newGame();},'new');hideMsOv()">&#127918; New Game</button>
+      <button class="cfbtn danger"    onclick="newGame()">&#127918; New Game</button>
     </div>
   </div>
 </div>
@@ -1208,6 +1208,11 @@ var mistakeStopped=false, mistakeLimitReached=false;
    GAME CONTROL
 ================================================================ */
 function newGame(seed){
+  /* Close every overlay that might be blocking */
+  ['msOv','cfOv','timeupOv','winOv','tipsOv','lbOv','shareOv'].forEach(function(id){
+    var el=document.getElementById(id);if(el)el.classList.remove('show');
+  });
+
   clearInterval(timerInt); timerInt=null;
   seconds=0; mistakes=0; selected=null; moveHistory=[];
   mistakeStopped=false; scoreEligible=true; mistakeLimitReached=false;
@@ -1220,6 +1225,10 @@ function newGame(seed){
   document.getElementById('lbsubmitBox').style.display='none';
   document.getElementById('undoBtn').disabled=true;
   closePop();
+
+  /* Show loading state while puzzle generates (can take a moment on hard levels) */
+  var boardEl=document.getElementById('board');
+  if(boardEl){boardEl.style.opacity='0.3';}
 
   currentSeed=seed||makeSeed();
   currentCode=levelToCode(currentLevel,currentSeed);
@@ -1244,6 +1253,8 @@ function newGame(seed){
   userBoard=cloneB(puzzle);
   given=puzzle.map(function(row){return row.map(function(v){return v!==0;});});
   renderBoard();
+  var boardEl2=document.getElementById('board');
+  if(boardEl2){boardEl2.style.opacity='1';}
   startTimer();
 }
 
@@ -1563,7 +1574,7 @@ function joinByCode(){
   if(!parsed){alert('Invalid code. Format: BG-04829');return;}
   currentLevel=parsed.level;
   hideOv('shareOv');
-  confirmThen(function(){newGame(parsed.seed);},'new');
+  newGame(parsed.seed);
 }
 function createChallenge(){
   var name=document.getElementById('challengeName').value.trim();
@@ -1573,7 +1584,7 @@ function createChallenge(){
   document.getElementById('challengeCodeOut').textContent=code;
   document.getElementById('challengeNameOut').textContent='"'+name+'"';
   document.getElementById('challengeResult').style.display='block';
-  confirmThen(function(){newGame(seed);},'new');
+  newGame(seed);
 }
 
 /* ================================================================
@@ -1606,7 +1617,7 @@ function confirmThen(action,ctx){
   document.getElementById('cfOv').classList.add('show');
 }
 function hideCf(){document.getElementById('cfOv').classList.remove('show');pendingCf=null;}
-function doCf(){hideCf();if(pendingCf){pendingCf();pendingCf=null;}}
+function doCf(){var action=pendingCf;pendingCf=null;document.getElementById('cfOv').classList.remove('show');if(action)action();}
 
 /* ================================================================
    OVERLAY HELPERS
